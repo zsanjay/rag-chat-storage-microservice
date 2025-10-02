@@ -1,0 +1,41 @@
+services:
+  app:
+    build: .
+    container_name: rag-chat-app
+    ports:
+      - "8081:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/chatdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create-drop
+      SPRING_JPA_SHOW_SQL: "true"
+      API_KEYS: "NslOaIVbm9kflAFBh42RltIuLGVcopMk,iZkaNaUwKDjCZ0RxHgI2zvhnfP3glvDU,zYWVdvTWrzPTqDrvvaNrY4hdnw3ojLfh"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    container_name: rag-chat-db
+    environment:
+      POSTGRES_DB: chatdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: rag-chat-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
+    depends_on:
+      - db
+
+volumes:
+  db-data:
