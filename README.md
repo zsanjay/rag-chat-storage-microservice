@@ -148,9 +148,8 @@ curl -X POST http://localhost:8081/api/v1/sessions/1/chat \
 | **GET** | `/health` | Health check endpoint |
 
 #### Example
-
 #### curl http://localhost:8081/health
-# Response: "OK"
+
 
 ## Server will start at:
 
