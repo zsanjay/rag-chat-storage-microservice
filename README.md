@@ -21,8 +21,9 @@
 
 ## Other Requirements
 
-##### 1. Unit Tests for Endpoints
-##### 2. Paginated APIs
+##### 1. Unit Tests for Endpoints.
+##### 2. Paginated APIs.
+##### 3. Mapper for Entity to DTO Converstion.
 
 ---
 
