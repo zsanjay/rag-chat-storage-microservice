@@ -25,10 +25,8 @@ public class Message extends BaseEntity {
     @Column(name = "sender_type", nullable = false)
     private SenderType senderType;
 
+    @Lob
+    @Column(name = "content", columnDefinition = "TEXT", nullable = false)
+    @Basic(fetch = FetchType.EAGER)
     private String content;
-
-    public Message(String content, SenderType senderType) {
-        this.content = content;
-        this.senderType = senderType;
-    }
 }

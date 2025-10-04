@@ -19,9 +19,8 @@ public class Session extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JoinColumn(name = "user_id",unique = true)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user;
+    @Column(name = "user_id")
+    private String user;
 
     private String title;
 
@@ -30,9 +29,4 @@ public class Session extends BaseEntity {
 
     @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages = new ArrayList<>();
-
-    public Session(String title, boolean isFavorite) {
-        this.title = title;
-        this.isFavorite = isFavorite;
-    }
 }

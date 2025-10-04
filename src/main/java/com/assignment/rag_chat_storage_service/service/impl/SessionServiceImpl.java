@@ -1,11 +1,21 @@
 package com.assignment.rag_chat_storage_service.service.impl;
 
+import com.assignment.rag_chat_storage_service.constant.Constants;
 import com.assignment.rag_chat_storage_service.dto.*;
+import com.assignment.rag_chat_storage_service.exception.NoSessionFoundException;
+import com.assignment.rag_chat_storage_service.exception.SessionAlreadyExistsException;
+import com.assignment.rag_chat_storage_service.exception.SessionNotFoundException;
 import com.assignment.rag_chat_storage_service.mapper.SessionMapper;
 import com.assignment.rag_chat_storage_service.model.Session;
 import com.assignment.rag_chat_storage_service.repository.SessionRepository;
 import com.assignment.rag_chat_storage_service.service.SessionService;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 import java.util.Objects;
 
 @Service
@@ -19,35 +29,68 @@ public class SessionServiceImpl implements SessionService {
         this.sessionMapper = sessionMapper;
     }
     @Override
-    public SessionResponse createSession(SessionRequest sessionRequest) {
+    public SessionResponseDto createSession(SessionRequestDto sessionRequest) {
        Session session =  sessionRepository.findByTitle(sessionRequest.title());
        if(Objects.nonNull(session)){
-           throw new RuntimeException(String.format("Session already exists for the title: %s", sessionRequest.title()));
+           throw new SessionAlreadyExistsException(sessionRequest.title());
        }
        session = sessionMapper.dtoToSession(sessionRequest);
        session = sessionRepository.save(session);
        return sessionMapper.sessionToDto(session);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public SessionResponse updateSessionTitle(Long sessionId, TitleChangeRequest titleChangeRequest) {
-        Session session = sessionRepository.findById(sessionId).orElseThrow(() -> new RuntimeException(String.format("Session doesn't  exists for the id: %s", sessionId)));
+    public PagedResult<List<SessionResponseDto>> getSessions(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Constants.CREATED_AT).ascending());
+        List<Session> sessions = sessionRepository.findAllWithoutMessages(pageable);
+        long totalElements = sessions.size();
+        if(totalElements == 0) {
+            throw new NoSessionFoundException();
+        }
+        int totalPages = (int) Math.ceil((double) totalElements / size);
+        return new PagedResult<>(sessions.stream()
+                .map(session -> sessionMapper.sessionToDto(session)).toList(), page, size, totalElements, totalPages);
+
+    }
+
+    @Transactional
+    @Override
+    public SessionResponseDto updateSessionTitle(Long sessionId, TitleChangeRequestDto titleChangeRequest) throws SessionNotFoundException {
+        Session session = sessionRepository.findByIdWithoutMessages(sessionId).orElseThrow(() -> new SessionNotFoundException(sessionId));
         session.setTitle(titleChangeRequest.title());
-        sessionRepository.save(session);
+        session = sessionRepository.save(session);
         return sessionMapper.sessionToDto(session);
     }
 
+    @Transactional
     @Override
-    public SessionResponse updateFavorite(Long sessionId, FavoriteRequest favoriteRequest) {
-        Session session = sessionRepository.findById(sessionId).orElseThrow(() -> new RuntimeException(String.format("Session doesn't  exists for the id: %s", sessionId)));
+    public SessionResponseDto updateFavorite(Long sessionId, FavoriteRequestDto favoriteRequest) {
+        Session session = sessionRepository.findByIdWithoutMessages(sessionId).orElseThrow(() -> new SessionNotFoundException(sessionId));
         session.setFavorite(favoriteRequest.isFavorite());
         sessionRepository.save(session);
         return sessionMapper.sessionToDto(session);
     }
 
+    @Transactional
     @Override
     public void deleteSession(Long sessionId) {
-        Session session = sessionRepository.findById(sessionId).orElseThrow(() -> new RuntimeException(String.format("Session doesn't  exists for the id: %s", sessionId)));
+        Session session = getSessionBySessionId(sessionId);
         sessionRepository.delete(session);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public SessionResponseDto getSession(Long sessionId) throws SessionNotFoundException {
+        Session session = getSessionByIdWithMessages(sessionId);
+        return sessionMapper.sessionToDto(session);
+    }
+
+    private Session getSessionBySessionId(Long sessionId) throws SessionNotFoundException {
+        return sessionRepository.findById(sessionId).orElseThrow(() -> new SessionNotFoundException(sessionId));
+    }
+
+    private Session getSessionByIdWithMessages(Long sessionId) throws SessionNotFoundException {
+        return sessionRepository.findByIdWithMessages(sessionId).orElseThrow(() -> new SessionNotFoundException(sessionId));
     }
 }

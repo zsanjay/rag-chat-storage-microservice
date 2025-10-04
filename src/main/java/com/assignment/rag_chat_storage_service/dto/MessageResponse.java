@@ -1,6 +1,11 @@
 package com.assignment.rag_chat_storage_service.dto;
 
-import java.util.List;
+import com.assignment.rag_chat_storage_service.constant.SenderType;
+import lombok.Builder;
 
-public record MessageResponse(Long sessionId, List<MessageRequest> messages) {
+import java.time.LocalDateTime;
+
+public record MessageResponse(Long messageId, SenderType senderType, String content, LocalDateTime createdAt) {
+    @Builder
+    public MessageResponse{}
 }
