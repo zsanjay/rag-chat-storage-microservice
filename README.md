@@ -10,6 +10,22 @@
 
 ---
 
+## Non Functional Requirements
+
+##### 1. Swagger/OpenAPI documentation.
+##### 2. CORS Security
+##### 3. Rate Limiting
+##### 4. Centralized logging and global error handling.
+
+---
+
+## Other Requirements
+
+##### 1. Unit Tests for Endpoints
+##### 2. Paginated APIs
+
+---
+
 ## Tech Stack
 
 - **Java 17 / Spring Boot 3+**
