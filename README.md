@@ -34,10 +34,11 @@ PGADMIN_DEFAULT_PASSWORD=admin
 
 ---
 
-##  Docker Setup
+##  Setup and running instructions
 
 #### 1. Download docker from - https://docs.docker.com/desktop/setup/install/mac-install/
-#### 2. Run 'docker-compose up --build -d' command to build the image and run the docker containers.
+#### 2. Run 'docker-compose up --build -d' command to build the image and run the docker containers in detached mode.
+####    This will start 3 containers - chat-app, postgresdb and pgadmin.
 #### 3. Optional Run 'docker-compose up --build -d --no-cache' command to delete the cache and build the image and run the docker containers.
 
 ---
