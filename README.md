@@ -23,13 +23,13 @@
 ## Environment Variables (`.env`)
 
 ```
-**POSTGRES_USER**=postgres
-**POSTGRES_PASSWORD**=postgres
-**POSTGRES_DB**=chatdb
-**API_KEYS**=key1,key2,key3
-**OPEN_AI_API_KEY**=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-**PGADMIN_DEFAULT_EMAIL**=admin@admin.com
-**PGADMIN_DEFAULT_PASSWORD**=admin
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=postgres
+POSTGRES_DB=chatdb
+API_KEYS=key1,key2,key3
+OPEN_AI_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+PGADMIN_DEFAULT_EMAIL=admin@admin.com
+PGADMIN_DEFAULT_PASSWORD=admin
 ```
 
 ---
