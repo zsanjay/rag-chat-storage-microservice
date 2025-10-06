@@ -12,6 +12,7 @@ import com.assignment.rag_chat_storage_service.repository.SessionRepository;
 import com.assignment.rag_chat_storage_service.service.ChatService;
 import com.assignment.rag_chat_storage_service.service.OpenAIService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ChatServiceImpl implements ChatService {
@@ -30,6 +31,7 @@ public class ChatServiceImpl implements ChatService {
         this.messageRepository = messageRepository;
     }
 
+    @Transactional
     @Override
     public ChatDto handleMessage(Long sessionId, ChatDto chatRequest) throws SessionNotFoundException {
         Session session = sessionRepository.findById(sessionId).orElseThrow(() -> new SessionNotFoundException(sessionId));

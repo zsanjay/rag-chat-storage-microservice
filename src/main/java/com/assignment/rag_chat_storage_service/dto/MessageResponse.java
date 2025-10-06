@@ -5,7 +5,7 @@ import lombok.Builder;
 
 import java.time.LocalDateTime;
 
+@Builder
 public record MessageResponse(Long messageId, SenderType senderType, String content, LocalDateTime createdAt) {
-    @Builder
-    public MessageResponse{}
+
 }

@@ -1,9 +1,6 @@
 package com.assignment.rag_chat_storage_service.service.impl;
 
-import com.assignment.rag_chat_storage_service.dto.MessageRequestDto;
-import com.assignment.rag_chat_storage_service.dto.MessageResponseDto;
-import com.assignment.rag_chat_storage_service.dto.MessagesResponseDto;
-import com.assignment.rag_chat_storage_service.dto.PagedResult;
+import com.assignment.rag_chat_storage_service.dto.*;
 import com.assignment.rag_chat_storage_service.exception.MessageNotFoundException;
 import com.assignment.rag_chat_storage_service.exception.SessionNotFoundException;
 import com.assignment.rag_chat_storage_service.exception.UnauthorizedAccessException;
@@ -42,6 +39,7 @@ public class MessageServiceImpl implements MessageService {
         message.setSession(session);
         session.getMessages().add(message);
         Message savedMessage = messageRepository.save(message);
+        //MessageResponse.builder().build().
         return messageMapper.messageToDto(sessionId, userId, savedMessage);
     }
 
