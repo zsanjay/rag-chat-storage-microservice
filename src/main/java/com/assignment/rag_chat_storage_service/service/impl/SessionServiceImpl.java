@@ -9,6 +9,7 @@ import com.assignment.rag_chat_storage_service.mapper.SessionMapper;
 import com.assignment.rag_chat_storage_service.model.Session;
 import com.assignment.rag_chat_storage_service.repository.SessionRepository;
 import com.assignment.rag_chat_storage_service.service.SessionService;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 public class SessionServiceImpl implements SessionService {
@@ -41,17 +43,15 @@ public class SessionServiceImpl implements SessionService {
 
     @Transactional(readOnly = true)
     @Override
-    public PagedResult<List<SessionResponseDto>> getSessions(int page, int size) {
+    public PageResponse<List<SessionResponseDto>> getSessions(int page, int size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(Constants.CREATED_AT).ascending());
-        List<Session> sessions = sessionRepository.findAllWithoutMessages(pageable);
-        long totalElements = sessions.size();
-        if(totalElements == 0) {
+        Page<Session> sessionPage = sessionRepository.findAllWithoutMessages(pageable);
+        if(sessionPage.getTotalElements() == 0) {
             throw new NoSessionFoundException();
         }
-        int totalPages = (int) Math.ceil((double) totalElements / size);
-        return new PagedResult<>(sessions.stream()
-                .map(session -> sessionMapper.sessionToDto(session)).toList(), page, size, totalElements, totalPages);
-
+        List<SessionResponseDto> sessionResponseDtoList =  sessionPage.stream()
+                .map(session -> sessionMapper.sessionToDto(session)).collect(Collectors.toList());
+        return new PageResponse<>(sessionResponseDtoList, page, size, sessionPage.getTotalElements(), sessionPage.getTotalPages());
     }
 
     @Transactional

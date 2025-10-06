@@ -1,5 +1,6 @@
 package com.assignment.rag_chat_storage_service.service.impl;
 
+import com.assignment.rag_chat_storage_service.constant.Constants;
 import com.assignment.rag_chat_storage_service.dto.*;
 import com.assignment.rag_chat_storage_service.exception.MessageNotFoundException;
 import com.assignment.rag_chat_storage_service.exception.SessionNotFoundException;
@@ -10,6 +11,10 @@ import com.assignment.rag_chat_storage_service.model.Session;
 import com.assignment.rag_chat_storage_service.repository.MessageRepository;
 import com.assignment.rag_chat_storage_service.repository.SessionRepository;
 import com.assignment.rag_chat_storage_service.service.MessageService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,21 +44,19 @@ public class MessageServiceImpl implements MessageService {
         message.setSession(session);
         session.getMessages().add(message);
         Message savedMessage = messageRepository.save(message);
-        //MessageResponse.builder().build().
         return messageMapper.messageToDto(sessionId, userId, savedMessage);
     }
 
     @Transactional
     @Override
-    public PagedResult<MessagesResponseDto> getMessageHistory(Long sessionId, int page, int size) throws SessionNotFoundException , MessageNotFoundException {
+    public PageResponse<MessagesResponseDto> getMessageHistory(Long sessionId, int page, int size) throws SessionNotFoundException , MessageNotFoundException {
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Constants.CREATED_AT).ascending());
         Session session = getSessionBySessionId(sessionId);
-        long totalElements = session.getMessages().size();
-        if(totalElements == 0) {
+        Page<Message> messages = messageRepository.findAllBySession(session, pageable);
+        if(messages.getSize() == 0) {
             throw new MessageNotFoundException(sessionId);
         }
-        int totalPages = (int) Math.ceil((double) totalElements / size);
-        List<Message> messageList = session.getMessages().stream().skip((long) page * size).limit(size).toList();
-        return new PagedResult<>(messageMapper.messagesToDto(sessionId, session.getUser(), messageList), page, size, totalElements, totalPages);
+        return new PageResponse<>(messageMapper.messagesToDto(sessionId, session.getUser(), messages.toList()), page, size, messages.getTotalElements(), messages.getTotalPages());
     }
 
     private Session getSessionBySessionId(Long sessionId) throws SessionNotFoundException {

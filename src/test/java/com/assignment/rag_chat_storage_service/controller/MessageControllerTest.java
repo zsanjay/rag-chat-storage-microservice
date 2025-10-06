@@ -13,8 +13,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import java.util.Arrays;
-import java.util.List;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -77,23 +75,16 @@ class MessageControllerTest {
 
     @Test
     void getMessageHistory_EmptyMessageList_Success() throws Exception {
-        PagedResult<MessagesResponseDto> emptyPage = new PagedResult<>();
+        PageResponse<MessagesResponseDto> emptyPage = new PageResponse<>(null, 1, 100, 100, 10);
         when(messageService.getMessageHistory(SESSION_ID, 0, 50)).thenReturn(emptyPage);
-
         mockMvc.perform(get("/api/v1/sessions/{sessionId}/messages", SESSION_ID))
                 .andExpect(status().isOk());
-
         verify(messageService, times(1)).getMessageHistory(SESSION_ID, 0, 50);
     }
 
     @Test
     void getMessageHistory_LargePaginationSize_Success() throws Exception {
-        PagedResult<MessagesResponseDto> page = new PagedResult<>();
-        page.setPage(1);
-        page.setSize(100);
-        page.setTotalPages(10);
-        page.setTotalElements(100);
-
+        PageResponse<MessagesResponseDto> page = new PageResponse<>(null, 1, 100, 100, 10);
         when(messageService.getMessageHistory(SESSION_ID, 0, 100)).thenReturn(page);
 
         mockMvc.perform(get("/api/v1/sessions/{sessionId}/messages", SESSION_ID)
@@ -106,17 +97,7 @@ class MessageControllerTest {
 
     @Test
     void getMessageHistory_ConversationFlow_Success() throws Exception {
-//        MessageResponseDto msg1 = createMessageResponse( "What is machine learning?", SenderType.USER);
-//        MessageResponseDto msg2 = createMessageResponse( "Machine learning is a subset of AI...", SenderType.ASSISTANT);
-//        MessageResponseDto msg3 = createMessageResponse( "Can you give me an example?", SenderType.USER);
-//        MessageResponseDto msg4 = createMessageResponse( "Sure! A common example is email spam detection...", SenderType.ASSISTANT);
-//
-//        List<MessageResponseDto> messages = Arrays.asList(msg1, msg2, msg3, msg4);
-        PagedResult<MessagesResponseDto> page = new PagedResult<>();
-        page.setPage(1);
-        page.setSize(50);
-        page.setTotalPages(10);
-
+        PageResponse<MessagesResponseDto> page = new PageResponse<>(null, 0, 50, 0, 1);
         when(messageService.getMessageHistory(SESSION_ID, 0, 50)).thenReturn(page);
 
         mockMvc.perform(get("/api/v1/sessions/{sessionId}/messages", SESSION_ID))

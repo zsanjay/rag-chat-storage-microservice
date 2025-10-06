@@ -3,7 +3,7 @@ package com.assignment.rag_chat_storage_service.controller;
 import com.assignment.rag_chat_storage_service.dto.MessageRequestDto;
 import com.assignment.rag_chat_storage_service.dto.MessageResponseDto;
 import com.assignment.rag_chat_storage_service.dto.MessagesResponseDto;
-import com.assignment.rag_chat_storage_service.dto.PagedResult;
+import com.assignment.rag_chat_storage_service.dto.PageResponse;
 import com.assignment.rag_chat_storage_service.exception.MessageNotFoundException;
 import com.assignment.rag_chat_storage_service.exception.SessionNotFoundException;
 import com.assignment.rag_chat_storage_service.service.MessageService;
@@ -50,15 +50,14 @@ public class MessageController {
 
     @GetMapping(value = "/{sessionId}/messages")
     @Operation(summary = "Get all messages for a session")
-    public ResponseEntity<PagedResult<MessagesResponseDto>> getMessageHistory(@PathVariable Long sessionId,
-                                                                             @RequestParam(defaultValue = "0") int page,
-                                                                             @RequestParam(defaultValue = "50") int size) throws SessionNotFoundException, MessageNotFoundException {
+    public ResponseEntity<PageResponse<MessagesResponseDto>> getMessageHistory(@PathVariable Long sessionId,
+                                                                               @RequestParam(defaultValue = "0") int page,
+                                                                               @RequestParam(defaultValue = "50") int size) throws SessionNotFoundException, MessageNotFoundException {
         log.info("Fetching message history | sessionId={} | page={} | size={}", sessionId, page, size);
-
         try {
-            PagedResult<MessagesResponseDto> result = this.messageService.getMessageHistory(sessionId, page, size);
+            PageResponse<MessagesResponseDto> result = this.messageService.getMessageHistory(sessionId, page, size);
             log.info("Fetched {} messages for sessionId={} (page={}, size={})",
-                    result.getSize(), sessionId, page, size);
+                    result.size(), sessionId, page, size);
             return ResponseEntity.ok(result);
         } catch (SessionNotFoundException | MessageNotFoundException e) {
             log.error("Error fetching message history | sessionId={} | error={}", sessionId, e.getMessage(), e);

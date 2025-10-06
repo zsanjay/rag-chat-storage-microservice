@@ -4,10 +4,12 @@ import com.assignment.rag_chat_storage_service.dto.*;
 import com.assignment.rag_chat_storage_service.exception.NoSessionFoundException;
 import com.assignment.rag_chat_storage_service.exception.SessionAlreadyExistsException;
 import com.assignment.rag_chat_storage_service.exception.SessionNotFoundException;
+import com.assignment.rag_chat_storage_service.model.Session;
 import com.assignment.rag_chat_storage_service.service.SessionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -49,12 +51,12 @@ public class SessionController {
 
     @GetMapping
     @Operation(summary = "Get all chat sessions")
-    public ResponseEntity<PagedResult<List<SessionResponseDto>>> getSessions(@RequestParam(defaultValue = "0") int page,
+    public ResponseEntity<PageResponse<List<SessionResponseDto>>> getSessions(@RequestParam(defaultValue = "0") int page,
                                                                 @RequestParam(defaultValue = "10") int size) {
         log.info("Getting all sessions of page={} and size={}", page, size);
         try {
-            PagedResult<List<SessionResponseDto>> sessionResponseDtoList = this.sessionService.getSessions(page, size);
-            log.info("Sessions successfully retrieved with size={}", sessionResponseDtoList.getSize());
+            PageResponse<List<SessionResponseDto>> sessionResponseDtoList = this.sessionService.getSessions(page, size);
+            log.info("Sessions successfully retrieved with size={}", sessionResponseDtoList.size());
             return new ResponseEntity<>(sessionResponseDtoList, HttpStatus.OK);
         } catch (NoSessionFoundException e) {
             log.error("No Session found", e);

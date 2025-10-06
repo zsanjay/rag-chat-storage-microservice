@@ -1,14 +1,12 @@
 package com.assignment.rag_chat_storage_service.repository;
 
-import com.assignment.rag_chat_storage_service.dto.SessionResponseDto;
 import com.assignment.rag_chat_storage_service.model.Session;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -23,5 +21,5 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
     Optional<Session> findByIdWithoutMessages(@Param("id") Long id);
 
     @Query("SELECT s FROM Session s")
-    List<Session> findAllWithoutMessages(Pageable pageable);
+    Page<Session> findAllWithoutMessages(Pageable pageable);
 }
