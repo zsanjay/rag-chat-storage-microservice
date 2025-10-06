@@ -72,11 +72,9 @@ public class SessionServiceImpl implements SessionService {
         return sessionMapper.sessionToDto(session);
     }
 
-    @Transactional
     @Override
     public void deleteSession(Long sessionId) {
-        Session session = getSessionBySessionId(sessionId);
-        sessionRepository.delete(session);
+        sessionRepository.deleteById(sessionId);
     }
 
     @Transactional(readOnly = true)
